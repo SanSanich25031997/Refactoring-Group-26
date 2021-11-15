@@ -23,7 +23,10 @@ def paint_mosaic(col, row):
             arr[i][j][1] = int(average_value / conversion_factor + 0.5) * conversion_factor
             arr[i][j][2] = int(average_value / conversion_factor + 0.5) * conversion_factor
 
-img = Image.open("img2.jpg")
+
+input_img = input("Введите имя исходного изображения: ")
+input_result = input("Введите имя результирующего изображения: ")
+img = Image.open(input_img)
 arr = np.array(img)
 mosaic_size = int(input('Введите размер мозайки: '))
 number_of_shades = int(input('Введите градацию серого: '))
@@ -40,4 +43,4 @@ while col < height - mosaic_size + 1:
     col = col + mosaic_size
 
 res = Image.fromarray(arr)
-res.save('res.jpg')
+res.save(input_result)
