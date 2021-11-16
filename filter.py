@@ -1,28 +1,39 @@
 from PIL import Image
 import numpy as np
 img = Image.open("img2.jpg")
-arr = np.array(img)
-a = len(arr)
-a1 = len(arr[1])
+imgArr = np.array(img)
+height = len(imgArr)
+width = len(imgArr[1])
+cellHeight, cellWidth = 10, 10
+grayScaleSteps = 50
 i = 0
-while i < a - 1:
+
+def getGrayLvlInCell(imgArr, cellHeight, cellWidth, i, j):
+    grayLevel = 0
+    for n in range(i, i + cellHeight):
+        for m in range(j, j + cellWidth):
+            red = imgArr[n][m][0]
+            green = imgArr[n][m][1]
+            blue = imgArr[n][m][2]
+            rgbSum = int(red) + int(green) + int(blue)
+            grayLevel += rgbSum / 3
+    return int(grayLevel // (cellWidth * cellHeight))
+
+def colorCell(imgArr, cellHeight, cellWidth, grayScaleSteps, i, j, grayLevel):
+    for n in range(i, i + cellHeight):
+        for m in range(j, j + cellWidth):
+            imgArr[n][m][0] = int(grayLevel // grayScaleSteps) * grayScaleSteps
+            imgArr[n][m][1] = int(grayLevel // grayScaleSteps) * grayScaleSteps
+            imgArr[n][m][2] = int(grayLevel // grayScaleSteps) * grayScaleSteps
+
+while i < height - 1:
     j = 0
-    while j < a1 - 1:
-        s = 0
-        for n in range(i, i + 10):
-            for m in range(j, j + 10):
-                n1 = arr[n][m][0]
-                n2 = arr[n][m][1]
-                n3 = arr[n][m][2]
-                M = int(n1) + int(n2) + int(n3)
-                s += M / 3
-        s = int(s // 100)
-        for n in range(i, i + 10):
-            for m in range(j, j + 10):
-                arr[n][m][0] = int(s // 50) * 50
-                arr[n][m][1] = int(s // 50) * 50
-                arr[n][m][2] = int(s // 50) * 50
-        j = j + 10
-    i = i + 10
-res = Image.fromarray(arr)
+    while j < width - 1:
+        grayLevel = getGrayLvlInCell(imgArr, cellHeight, cellWidth, i, j)
+
+        colorCell(imgArr, cellHeight, cellWidth, grayScaleSteps, i, j, grayLevel)
+
+        j = j + cellWidth
+    i = i + cellHeight
+res = Image.fromarray(imgArr)
 res.save('res.jpg')
