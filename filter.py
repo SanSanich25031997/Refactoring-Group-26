@@ -19,9 +19,7 @@ def paint_mosaic(col, row):
 
     for i in range(col, col + mosaic_size):
         for j in range(row, row + mosaic_size):
-            arr[i][j][0] = int(average_value / conversion_factor + 0.5) * conversion_factor
-            arr[i][j][1] = int(average_value / conversion_factor + 0.5) * conversion_factor
-            arr[i][j][2] = int(average_value / conversion_factor + 0.5) * conversion_factor
+             arr[i][j][[0, 1, 2]]  = int(average_value / conversion_factor + 0.5) * conversion_factor
 
 
 input_img = input("Введите имя исходного изображения: ")
