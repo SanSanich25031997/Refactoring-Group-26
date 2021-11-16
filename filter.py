@@ -1,6 +1,8 @@
 from PIL import Image
 import numpy as np
-img = Image.open("img2.jpg")
+print("Введите имена исходного изображения и результата")
+[imgIn, imgOut] = input().split(' ')
+img = Image.open(imgIn)
 imgArr = np.array(img)
 height = len(imgArr)
 width = len(imgArr[1])
@@ -35,5 +37,7 @@ while i < height - 1:
 
         j = j + cellWidth
     i = i + cellHeight
+
 res = Image.fromarray(imgArr)
-res.save('res.jpg')
+res.save(imgOut)
+print("Результат готов!")
