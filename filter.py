@@ -1,28 +1,32 @@
 from PIL import Image
 import numpy as np
+
 img = Image.open("img2.jpg")
-arr = np.array(img)
-a = len(arr)
-a1 = len(arr[1])
+arrImg = np.array(img)
+height = len(arrImg)
+width = len(arrImg[1])
+
 i = 0
-while i < a - 11:
+while i < height - 1:
     j = 0
-    while j < a1 - 11:
-        s = 0
-        for n in range(i, i + 10):
-            for n1 in range(j, j + 10):
-                n1 = arr[n][n1][0]
-                n2 = arr[n][n1][1]
-                n3 = arr[n][n1][2]
-                M = n1 + n2 + n3
-                s += M
-        s = int(s // 100)
-        for n in range(i, i + 10):
-            for n1 in range(j, j + 10):
-                arr[n][n1][0] = int(s // 50) * 50
-                arr[n][n1][1] = int(s // 50) * 50
-                arr[n][n1][2] = int(s // 50) * 50
+    while j < width - 1:
+        sumBright = 0
+        for y in range(i, i + 10):
+            for x in range(j, j + 10):
+                R = arrImg[y][x][0]
+                G = arrImg[y][x][1]
+                B = arrImg[y][x][2]
+                rgbSum = int(R) + int(G) + int(B)
+                sumBright += rgbSum / 3
+        brightness = int(sumBright // 100)
+
+        for y in range(i, i + 10):
+            for x in range(j, j + 10):
+                arrImg[y][x][0] = int(brightness // 50) * 50
+                arrImg[y][x][1] = int(brightness // 50) * 50
+                arrImg[y][x][2] = int(brightness // 50) * 50
         j = j + 10
     i = i + 10
-res = Image.fromarray(arr)
+
+res = Image.fromarray(arrImg)
 res.save('res.jpg')
