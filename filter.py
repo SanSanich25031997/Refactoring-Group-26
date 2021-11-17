@@ -2,10 +2,11 @@ from PIL import Image
 import numpy as np
 from numpy.lib.shape_base import tile
 
-img = Image.open("img2.jpg")
-tile_step = int(input("Введите размер мозаики: "))
-gray_step = int(input("Введите количество градаций серого: "))
-arr = np.array(img, dtype = np.int32)
+orig_img_name = Image.open(input("Название файла изображения: "))
+res_img_name = input("Название итогового файла с ч/б изображением: ")
+tile_step = int(input("Размер мозаики: "))
+gray_step = int(input("Градации серого: "))
+arr = np.array(orig_img_name, dtype = np.int32)
 arr_length = len(arr)
 arr_1_length = len(arr[1])
 
@@ -37,4 +38,4 @@ while i < arr_length - 1:
         j = j + tile_step
     i = i + tile_step
 res = Image.fromarray(arr.astype(np.uint8))
-res.save('res.jpg')
+res.save(res_img_name)
