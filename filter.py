@@ -1,28 +1,41 @@
 from PIL import Image
 import numpy as np
-img = Image.open("img2.jpg")
-arr = np.array(img)
-a = len(arr)
-a1 = len(arr[1])
+from numpy.lib.shape_base import tile
+
+orig_img_name = Image.open(input("Название файла изображения: "))
+res_img_name = input("Название итогового файла с ч/б изображением: ")
+tile_step = int(input("Размер мозаики: "))
+gray_step = int(input("Градации серого: "))
+arr = np.array(orig_img_name, dtype = np.int32)
+arr_length = len(arr)
+arr_1_length = len(arr[1])
+
+def paintGray(arr, tile_step, gray_step, sum):
+    sum = int(sum // 100)
+    for a in range(i, i + tile_step):
+        for b in range(j, j + tile_step):
+            arr[a][b][0] = int(sum // 50) * gray_step
+            arr[a][b][1] = int(sum // 50) * gray_step
+            arr[a][b][2] = int(sum // 50) * gray_step
+
+def drawImage(arr, tile_step, gray_step):
+    sum = 0
+    for x in range(i, i + tile_step):
+        for y in range(j, j + tile_step):
+            n1 = arr[x][y][0]
+            n2 = arr[x][y][1]
+            n3 = arr[x][y][2]
+            M = (n1 + n2 + n3) // 3
+            sum += M
+    paintGray(arr, tile_step, gray_step, sum)
+
+
 i = 0
-while i < a - 11:
+while i < arr_length - 1:
     j = 0
-    while j < a1 - 11:
-        s = 0
-        for n in range(i, i + 10):
-            for n1 in range(j, j + 10):
-                n1 = arr[n][n1][0]
-                n2 = arr[n][n1][1]
-                n3 = arr[n][n1][2]
-                M = n1 + n2 + n3
-                s += M
-        s = int(s // 100)
-        for n in range(i, i + 10):
-            for n1 in range(j, j + 10):
-                arr[n][n1][0] = int(s // 50) * 50
-                arr[n][n1][1] = int(s // 50) * 50
-                arr[n][n1][2] = int(s // 50) * 50
-        j = j + 10
-    i = i + 10
-res = Image.fromarray(arr)
-res.save('res.jpg')
+    while j < arr_1_length - 1:
+        drawImage(arr, tile_step, gray_step)
+        j = j + tile_step
+    i = i + tile_step
+res = Image.fromarray(arr.astype(np.uint8))
+res.save(res_img_name)
