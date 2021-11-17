@@ -1,6 +1,31 @@
 from PIL import Image
 import numpy as np
-img = Image.open("img2.jpg")
+
+img_in_way=input(
+    "Введите имя входного изображения (\"imageName.jpg\"):")
+if (img_in_way==""):
+    print("Пустое поле ввода")
+    quit()
+
+img_out_way=input(
+    "Введите имя выходного изображения (\"imageName.jpg\"):")
+if (img_out_way == ''):
+    print('Пустое поле ввода')
+    imgOutName = 'resultImage.jpg'
+
+img_params_size=input(
+    'Введите четкость изображения (1-10):')
+if (img_params_size == ''):
+    print('Пустое поле ввода')
+    img_params_size = 10
+
+img_params_grad=input(
+    'Введите градацию серого (1-255):')
+if (img_params_grad == ''):
+    print('Пустое поле ввода')
+    img_params_grad = 10
+
+img = Image.open(img_in_way)
 arr_img = np.array(img)
 rows = len(arr_img)
 columns = len(arr_img[1])
@@ -32,6 +57,10 @@ def create_mosaic(size, gradations):
             number_column = number_column + size
         number_row = number_row + size
 
-create_mosaic(2,10)
+create_mosaic(int(img_params_size),int(img_params_grad))
 res = Image.fromarray(arr_img)
-res.save('res.jpg')
+try:
+    res.save(img_out_way)
+except BaseException:
+    print('Ошибка имени выходного изображения')
+    quit()
