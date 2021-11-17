@@ -1,42 +1,51 @@
 from PIL import Image
 import numpy as np
 
-img = Image.open("img2.jpg")
-image_pixels = np.array(img)
-height = len(image_pixels)
-width = len(image_pixels[1])
+
+def check_image(image_names):
+    if image_names[0] == "" or not '.' in image_names[0]:
+        quit()
+    if len(image_names) == 1:
+        image_names.append("output.jpg")
 
 
-def get_grayscale(i, j, mosaic_width, mosaic_height):
+def get_grayscale(i, j, size):
     grayscale = 0
-    for row in range(i, i + mosaic_height):
-        for column in range(j, j + mosaic_width):
+    for row in range(i, i + size):
+        for column in range(j, j + size):
             red = image_pixels[row][column][0]
             green = image_pixels[row][column][1]
             blue = image_pixels[row][column][2]
             rgb_total = int(red) + int(green) + int(blue)
             grayscale += rgb_total / 3
-    return int(grayscale // (mosaic_width * mosaic_height))
+    return int(grayscale // (size ** 2))
 
 
-def set_color(i, j, mosaic_width, mosaic_height, grayscale, gray_spread):
-    for row in range(i, i + mosaic_height):
-        for column in range(j, j + mosaic_width):
+def set_color(i, j, size, grayscale, gray_spread):
+    for row in range(i, i + size):
+        for column in range(j, j + size):
             for n in range(3):
                 image_pixels[row][column][n] = int(grayscale // gray_spread) * gray_spread
 
 
-def make_mosaic(mosaic_width, mosaic_height, gray_spread):
+def make_mosaic(size, gray_spread):
     i = 0
     while i < height - 1:
         j = 0
         while j < width - 1:
-            set_color(i, j, mosaic_width, mosaic_height, get_grayscale(i, j, mosaic_width, mosaic_height), gray_spread)
-            j = j + mosaic_width
-        i = i + mosaic_height
+            set_color(i, j, size, get_grayscale(i, j, size), gray_spread)
+            j = j + size
+        i = i + size
 
 
-sizes = input("Введите размеры мозайки (Ш, В): ").split(", ")
-make_mosaic(int(sizes[0]), int(sizes[1]), int(input("Введите шаг градации серого: ")))
+names_input = input(
+    "Введите название входного и выходного изображения, например, \"my_picture.jpg mosaic_picture.jpg\": ").split(
+    ' ')
+check_image(names_input)
+img = Image.open(names_input[0])
+image_pixels = np.array(img)
+height = len(image_pixels)
+width = len(image_pixels[1])
+make_mosaic(int(input("Введите высоту ячейки мозайки: ")), int(input("Введите шаг градации серого: ")))
 res = Image.fromarray(image_pixels)
-res.save('res.jpg')
+res.save(names_input[1])
