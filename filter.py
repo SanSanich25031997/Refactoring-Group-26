@@ -1,32 +1,40 @@
 from PIL import Image
 import numpy as np
 
+
+def GetCellBrightness(imgArray, i, j, cellHeight, cellWidth):
+    sumBright = 0
+    for row in range(i, i + cellHeight):
+        for col in range(j, j + cellWidth):
+            rgbSum = 0
+            for rgb in range(3):
+                rgbSum += int(imgArray[row][col][rgb])
+            sumBright += rgbSum / 3
+    return int(sumBright // (cellHeight ** 2))
+
+
+def ApplyGrayscale(imgArray, brightness, i, j, cellHeight, cellWidth):
+    for row in range(i, i + cellHeight):
+        for col in range(j, j + cellWidth):
+            for rgb in range(3):
+                imgArray[row][col][rgb] = int(
+                    brightness // grayscaleValue) * grayscaleValue
+
+
 img = Image.open("img2.jpg")
-arrImg = np.array(img)
-height = len(arrImg)
-width = len(arrImg[1])
+imgArray = np.array(img)
+height = len(imgArray)
+width = len(imgArray[0])
 
-i = 0
-while i < height - 1:
-    j = 0
-    while j < width - 1:
-        sumBright = 0
-        for y in range(i, i + 10):
-            for x in range(j, j + 10):
-                R = arrImg[y][x][0]
-                G = arrImg[y][x][1]
-                B = arrImg[y][x][2]
-                rgbSum = int(R) + int(G) + int(B)
-                sumBright += rgbSum / 3
-        brightness = int(sumBright // 100)
+cellHeight, cellWidth = 10, 10
+grayscaleSteps = 5
+grayscaleValue = int(255 / grayscaleSteps)
 
-        for y in range(i, i + 10):
-            for x in range(j, j + 10):
-                arrImg[y][x][0] = int(brightness // 50) * 50
-                arrImg[y][x][1] = int(brightness // 50) * 50
-                arrImg[y][x][2] = int(brightness // 50) * 50
-        j = j + 10
-    i = i + 10
 
-res = Image.fromarray(arrImg)
+for i in range(0, height - 1, cellHeight):
+    for j in range(0, width - 1, cellWidth):
+        brightness = GetCellBrightness(imgArray, i, j, cellHeight, cellWidth)
+        ApplyGrayscale(imgArray, brightness, i, j, cellHeight, cellWidth)
+
+res = Image.fromarray(imgArray)
 res.save('res.jpg')
