@@ -1,28 +1,61 @@
 from PIL import Image
 import numpy as np
-img = Image.open("img2.jpg")
-arr = np.array(img)
-a = len(arr)
-a1 = len(arr[1])
-i = 0
-while i < a - 11:
-    j = 0
-    while j < a1 - 11:
-        s = 0
-        for n in range(i, i + 10):
-            for n1 in range(j, j + 10):
-                n1 = arr[n][n1][0]
-                n2 = arr[n][n1][1]
-                n3 = arr[n][n1][2]
-                M = n1 + n2 + n3
-                s += M
-        s = int(s // 100)
-        for n in range(i, i + 10):
-            for n1 in range(j, j + 10):
-                arr[n][n1][0] = int(s // 50) * 50
-                arr[n][n1][1] = int(s // 50) * 50
-                arr[n][n1][2] = int(s // 50) * 50
-        j = j + 10
-    i = i + 10
-res = Image.fromarray(arr)
-res.save('res.jpg')
+
+
+def GetCellBrightness(imgArray, i, j, cellHeight, cellWidth):
+    sumBright = 0
+    for row in range(i, i + cellHeight):
+        for col in range(j, j + cellWidth):
+            rgbSum = 0
+            for rgb in range(3):
+                rgbSum += int(imgArray[row][col][rgb])
+            sumBright += rgbSum / 3
+    return int(sumBright // (cellHeight ** 2))
+
+
+def ApplyGrayscale(imgArray, brightness, i, j, cellHeight, cellWidth):
+    for row in range(i, i + cellHeight):
+        for col in range(j, j + cellWidth):
+            for rgb in range(3):
+                imgArray[row][col][rgb] = int(
+                    brightness // grayscaleValue) * grayscaleValue
+
+
+imgInName = input(
+    "Введите название входного изображения в формате \"imageName.jpg\":")
+
+if imgInName == '':
+    print('Пустые имена не разрешены!')
+    print('Выход из программы...')
+    quit()
+
+imgOutName = input(
+    "Введите название выходного изображения в формате \"resultName.jpg\":")
+
+if imgOutName == '':
+    print('Название выходного изображения будет заменено на \"resultImage.jpg\".')
+    imgOutName = 'resultImage.jpg'
+
+img = Image.open(imgInName)
+imgArray = np.array(img)
+height = len(imgArray)
+width = len(imgArray[0])
+
+cellHeight, cellWidth = 10, 10  # Высота и ширина мозаики (в пикселях)
+grayscaleSteps = 5  # Количество градаций серого
+grayscaleValue = int(255 / grayscaleSteps)
+
+for i in range(0, height - 1, cellHeight):
+    for j in range(0, width - 1, cellWidth):
+        brightness = GetCellBrightness(imgArray, i, j, cellHeight, cellWidth)
+        ApplyGrayscale(imgArray, brightness, i, j, cellHeight, cellWidth)
+res = Image.fromarray(imgArray)
+
+try:
+    res.save(imgOutName)
+except BaseException:
+    print('Ошибка в записи файла, проверьте корректность названия выходного изображения.')
+    print('Выход из программы...')
+    quit()
+
+print('Дело сделано!')
