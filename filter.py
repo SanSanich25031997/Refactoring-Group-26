@@ -1,27 +1,25 @@
 from PIL import Image
 import numpy as np
 
-np.seterr(over='ignore')
-arr_img = np.array(Image.open("img2.jpg"))
-image_width, image_height = len(arr_img), len(arr_img[1])
-mosaic_size, grey_step = 2, 80
-pos_x = 0
 
-while pos_x < image_width:
-    pos_y = 0
-    while pos_y < image_height:
-        s = 0
-        for x in range(pos_x, pos_x + mosaic_size):
-            for y in range(pos_y, pos_y + mosaic_size):
-                s += arr_img[x][y][0] / 3 + arr_img[x][y][1] / 3 + arr_img[x][y][2] / 3
-        s = int(s // mosaic_size ** 2)
-        for x in range(pos_x, pos_x + mosaic_size):
-            for y in range(pos_y, pos_y + mosaic_size):
-                arr_img[x][y][0] = int(s // grey_step) * grey_step
-                arr_img[x][y][1] = int(s // grey_step) * grey_step
-                arr_img[x][y][2] = int(s // grey_step) * grey_step
-        pos_y += mosaic_size
-    pos_x += mosaic_size
+def convert_image_to_mosaic(image, size, gradation_step):
+    for x in range(0, len(image), size):
+        for y in range(0, len(image[0]), size):
+            image[x:x + size, y:y + size] = get_average_brightness(
+                image[x:x + size, y:y + size], size, gradation_step)
+    return image
 
-res = Image.fromarray(arr_img)
-res.save('res.jpg')
+
+def get_average_brightness(block, size, gradation_step):
+    average_color = (block[:size, :size].sum() / 3) // size ** 2
+    return int(average_color // gradation_step) * gradation_step
+
+
+def main():
+    image = np.array(Image.open('img2.jpg'))
+    res = Image.fromarray(convert_image_to_mosaic(image, 10, 50))
+    res.save('res.jpg')
+
+
+if __name__ == '__main__':
+    main()
