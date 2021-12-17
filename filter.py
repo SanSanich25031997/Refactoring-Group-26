@@ -1,28 +1,29 @@
 from PIL import Image
 import numpy as np
-img = Image.open("img2.jpg")
-arr = np.array(img)
-a = len(arr)
-a1 = len(arr[1])
-i = 0
-while i < a - 11:
-    j = 0
-    while j < a1 - 11:
-        s = 0
-        for n in range(i, i + 10):
-            for n1 in range(j, j + 10):
-                n1 = arr[n][n1][0]
-                n2 = arr[n][n1][1]
-                n3 = arr[n][n1][2]
-                M = n1 + n2 + n3
-                s += M
-        s = int(s // 100)
-        for n in range(i, i + 10):
-            for n1 in range(j, j + 10):
-                arr[n][n1][0] = int(s // 50) * 50
-                arr[n][n1][1] = int(s // 50) * 50
-                arr[n][n1][2] = int(s // 50) * 50
-        j = j + 10
-    i = i + 10
-res = Image.fromarray(arr)
-res.save('res.jpg')
+
+
+def convert_image_to_mosaic(image, size, gradation_step):
+    for x in range(0, len(image), size):
+        for y in range(0, len(image[0]), size):
+            image[x:x + size, y:y + size] = get_average_brightness(
+                image[x:x + size, y:y + size], size, gradation_step)
+    return image
+
+
+def get_average_brightness(block, size, gradation_step):
+    average_color = (block[:size, :size].sum() / 3) // size ** 2
+    return int(average_color // gradation_step) * gradation_step
+
+
+def main():
+    image_file = Image.open(input("Введите имя файла, которое хотите конвертировать: "))
+    block_size = int(input("Введите размер мозайки: "))
+    gradations_count = int(input("Введите количество градаций серого: "))
+    image = np.array(image_file)
+
+    res = Image.fromarray(convert_image_to_mosaic(image, block_size, gradations_count))
+    res.save(input("Введите имя файла, в которой хотите сохранить результат: "))
+
+
+if __name__ == '__main__':
+    main()
