@@ -2,29 +2,26 @@ from PIL import Image
 import numpy as np
 
 np.seterr(over='ignore')
-img = Image.open("img2.jpg")
-arr = np.array(img)
-a = len(arr)
-a1 = len(arr[1])
-i = 0
-while i < a:
-    j = 0
-    while j < a1:
+arr_img = np.array(Image.open("img2.jpg"))
+image_width, image_height = len(arr_img), len(arr_img[1])
+mosaic_size, grey_step = 2, 80
+pos_x = 0
+
+while pos_x < image_width:
+    pos_y = 0
+    while pos_y < image_height:
         s = 0
-        for x in range(i, i + 10):
-            for y in range(j, j + 10):
-                n1 = arr[x][y][0] / 3
-                n2 = arr[x][y][1] / 3
-                n3 = arr[x][y][2] / 3
-                M = n1 + n2 + n3
-                s += M
-        s = int(s // 100)
-        for x in range(i, i + 10):
-            for y in range(j, j + 10):
-                arr[x][y][0] = int(s // 50) * 50
-                arr[x][y][1] = int(s // 50) * 50
-                arr[x][y][2] = int(s // 50) * 50
-        j = j + 10
-    i = i + 10
-res = Image.fromarray(arr)
+        for x in range(pos_x, pos_x + mosaic_size):
+            for y in range(pos_y, pos_y + mosaic_size):
+                s += arr_img[x][y][0] / 3 + arr_img[x][y][1] / 3 + arr_img[x][y][2] / 3
+        s = int(s // mosaic_size ** 2)
+        for x in range(pos_x, pos_x + mosaic_size):
+            for y in range(pos_y, pos_y + mosaic_size):
+                arr_img[x][y][0] = int(s // grey_step) * grey_step
+                arr_img[x][y][1] = int(s // grey_step) * grey_step
+                arr_img[x][y][2] = int(s // grey_step) * grey_step
+        pos_y += mosaic_size
+    pos_x += mosaic_size
+
+res = Image.fromarray(arr_img)
 res.save('res.jpg')
